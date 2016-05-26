@@ -19,3 +19,5 @@ works out of the box. Otherwise you have to tinker with the code.
 """, formatter_class=argparse.RawDescriptionHelpFormatter)
 
 parser.parse_args()
+
+print "lol"
