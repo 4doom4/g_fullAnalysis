@@ -7,12 +7,9 @@ import subprocess
 # write func to find files
 
 class concatenateTrajectories:
-	def __init__(self, folder, trajectoryFileType, checkConcatGroup, systemName, repetition):
+	def __init__(self, folder, trajectoryFileType, systemName, repetition):
 		# Check if the correct file type was chosen
 		self.trajectoryFileType = self.checkFileType(trajectoryFileType)
-
-		# Check if selected group is correct
-		self.concatGroup = self.checkConcatGroup(checkConcatGroup)
 
 		# Get all the trajectory names
 		self.trajectories = self.checkCorrectFolder(folder, trajectoryFileType)
@@ -52,7 +49,10 @@ class concatenateTrajectories:
 		return foundFiles
 
 
-	def concatenate(self):
+	def concatenate(self, checkConcatGroup):
+		# Check if selected group is correct
+		concatGroup = self.checkConcatGroup(checkConcatGroup)
+
 		# To concatenate the trajectories we need to find the timestamps of the trajectories
 		# It starts at 0
 		timeStamp = [0]
@@ -84,7 +84,7 @@ class concatenateTrajectories:
 		# Run the program
 		p = subprocess.Popen("echo \"q\" | %s -f %s -o %s_rep%i_protein.ndx"%(makeNDXProgram, self.tprFile, self.systemName, self.repetition), shell=True, stdin=subprocess.PIPE, stdout=logFile, stderr=subprocess.STDOUT)
 		p.communicate() #now wait
-		
+
 		# Generate the concatenate trajectory
 		gmxProgram = self.which("gmx_mpi")
 
@@ -240,8 +240,11 @@ if __name__ == "__main__":
 	parser.add_argument("-r", metavar="(1) ", help="Repetition of run", default=1)
 	args = parser.parse_args()
 
-	trj = concatenateTrajectories(args.cf, args.ct, args.cg, args.n, args.r)
-	trj.concatenate()
+	# Initiate the concatenate trajectory object
+	trj = concatenateTrajectories(args.cf, args.ct, args.n, args.r)
+
+	# Concatenate
+	trj.concatenate(args.cg)
 
 
 
